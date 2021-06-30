@@ -20,8 +20,10 @@ public class ApiTest {
     @BeforeClass
     public void prepare() throws IOException {
 
+        System.getProperties().put("api.key", "4f1d1a34-1b9b-4639-a267-e457f2932bd8");
+
         // Читаем конфигурационный файл в System.properties -- простейшее HashMap хранилище
-        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+//            System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
 
         // Здесь мы задаём глобальные преднастройки для каждого запроса. Аналогично можно задавать их
         // перед каждым запросом отдельно, либо создать поле RequestSpecification и задавать весь пакет настроек
@@ -99,15 +101,30 @@ public class ApiTest {
 
     @Test
     public void tetDelete() throws IOException {
-        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
+        Pet pet = new Pet(); // создаём экземпляр POJO объекта Pet
+        int id = new Random().nextInt(500000); // просто нужно создать произвольный айди
+        String name = "Pet_" + UUID.randomUUID().toString(); // UUID гарантирует уникальность строки
+        pet.setId(id);
+        pet.setName(name);
+
+        given()  // часть стандартного синтаксиса BDD. Означает предварительные данные. Иначе говоря ДАНО:
+                .body(pet) // указываем что  помещаем в тело запроса. Поскольку у нас подключен Gson, он преобразуется в JSON
+                .when()   // КОГДА:
+                .post("/pet") // выполняем запрос методом POST к ресурсу /pet, при этом используется ранее
+                // созданная "шапка". Именно в этом методе создаётся "текстовый файл" запроса, он отправляется
+                // посредством HTTP к серверу. Затем в этом же методе получается ответ. После этого метода мы
+                // работаем с ОТВЕТОМ
+                .then() // ТОГДА: (указывает, что после этой части будут выполняться проверки-утверждения)
+                .statusCode(200);
+//        System.getProperties().load(ClassLoader.getSystemResourceAsStream("my.properties"));
         given()
-                .pathParam("petId", System.getProperty("petId"))
+                .pathParam("petId", id)
             .when()
                 .delete("/pet/{petId}")
             .then()
                 .statusCode(200);
         given()
-                .pathParam("petId", System.getProperty("petId"))
+                .pathParam("petId", id)
              .when()
                 .get("/pet/{petId}")
              .then()
