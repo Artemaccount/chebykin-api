@@ -19,7 +19,7 @@ public class HomeTaskApiTest {
     @BeforeClass
     public void prepare() {
 
-        System.getProperties().put("api.key", "4f1d1a34-1b9b-4639-a267-e457f2932bd8");
+        System.getProperties().put("api.key", "");
         RestAssured.requestSpecification = new RequestSpecBuilder()
                 .setBaseUri("https://petstore.swagger.io/v2/store/") // задаём базовый адрес каждого ресурса
                 .addHeader("api_key", System.getProperty("api.key"))
